@@ -1,0 +1,19 @@
+{
+  "name": "bbc-frontend-automation",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "cucumber-js --require-module ts-node/register 'features/**/*.feature' --require 'steps/**/*.ts' --publish-quiet",
+    "report": "node support/generateReport.js",
+    "test:headed": "HEADLESS=0 cucumber-js --require-module ts-node/register 'features/**/*.feature' --require 'steps/**/*.ts'",
+    "ci": "npm run test && npm run report"
+  },
+  "devDependencies": {
+    "@cucumber/cucumber": "^9.0.0",
+    "@cucumber/html-formatter": "^19.0.0",
+    "cucumber-html-reporter": "^6.0.0",
+    "playwright": "^1.40.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.0"
+  }
+}
