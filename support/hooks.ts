@@ -21,3 +21,8 @@ AfterAll(async () => {
   await browser.close();
   if (!fs.existsSync('reports')) fs.mkdirSync('reports');
 });
+import { setDefaultTimeout } from '@cucumber/cucumber';
+
+// Set default timeout for all steps to 60 seconds (60000 ms)
+setDefaultTimeout(60 * 1000);
+});
