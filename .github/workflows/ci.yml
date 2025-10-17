@@ -5,26 +5,30 @@ on:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
+  workflow_dispatch:
 
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'   # 18+ is fine; 20 is current LTS
+
       - name: Install dependencies
         run: npm ci
+
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
+
       - name: Run tests and generate reports
         run: npm run ci
+
       - name: Upload test artifacts
         uses: actions/upload-artifact@v4
         with:
           name: test-reports
           path: reports/
-on:
-   workflow_dispatch:
