@@ -1,14 +1,14 @@
 {
-"compilerOptions": {
-  "target": "ES2020",
-  "module": "commonjs",
-  "lib": ["ES2020", "DOM"],
-  "strict": true,
-  "esModuleInterop": true,
-  "skipLibCheck": true,
-  "outDir": "dist",
-  "sourceMap": true,
-  "types": ["@playwright/test"]
-},
-"include": ["steps/**/*.ts", "support/**/*.ts", "pages/**/*.ts"]
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "commonjs",
+    "lib": ["ES2020", "DOM"],
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "outDir": "dist",
+    "sourceMap": true,
+    "types": ["@playwright/test", "node"]
+  },
+  "include": ["steps/**/*.ts", "support/**/*.ts", "pages/**/*.ts"]
 }
