@@ -23,6 +23,6 @@ AfterAll(async () => {
 });
 import { setDefaultTimeout } from '@cucumber/cucumber';
 
-// Set default timeout for all steps to 60 seconds (60000 ms)
-setDefaultTimeout(60 * 1000);
+import { setDefaultTimeout } from '@cucumber/cucumber';
+setDefaultTimeout(60_000); // 60 seconds per step
 });
