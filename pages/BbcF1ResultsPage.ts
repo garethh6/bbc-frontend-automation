@@ -1,39 +1,49 @@
-import { chromium, type Browser, type Page } from 'playwright';
+import { type Page } from 'playwright';
 import type { DataTable } from '@cucumber/cucumber';
 import assert from 'assert';
+import { page as sharedPage } from '../support/hooks';
 
 export class BbcF1ResultsPage {
-  private browser!: Browser;
-  private page!: Page;
-
-  async openF1Page(): Promise<void> {
-    this.browser = await chromium.launch({ headless: process.env.HEADLESS !== '0' });
-    const context = await this.browser.newContext();
-    this.page = await context.newPage();
-
-    // More forgiving timeouts for slow CI
-    this.page.setDefaultTimeout(15000);
-    this.page.setDefaultNavigationTimeout(30000);
-
-    await this.page.goto('https://www.bbc.com/sport/formula1', { waitUntil: 'domcontentloaded' });
-
-    // Handle cookie/consent banners (BBC variants)
-    // Try several common labels; ignore if not present.
-    const consentSelectors = [
-      'button:has-text("Agree")',
-      'button:has-text("Accept all")',
-      'button:has-text("I agree")',
-      '[data-testid="cookie-banner-accept"]',
-    ];
-    for (const sel of consentSelectors) {
-      const btn = this.page.locator(sel);
-      if (await btn.first().isVisible({ timeout: 1000 }).catch(() => false)) {
-        await btn.first().click().catch(() => {});
-        break;
-      }
-    }
+  private get page(): Page {
+    if (!sharedPage) throw new Error('Page is not initialized');
+    return sharedPage;
   }
 
+  async openF1Page(): Promise<void> {
+    await this.page.goto('https://www.bbc.com/sport/formula1', { waitUntil: 'domcontentloaded' });
+
+    // try to accept cookies quickly if present
+    const accept = this.page.locator('button:has-text("Accept all"), button:has-text("Agree")').first();
+    if (await accept.isVisible().catch(()=>false)) await accept.click().catch(()=>{});
+  }
+
+  async navigateToVegasResults(): Promise<void> {
+    // robust link matching
+    const vegas = this.page.getByRole('link', { name: /las vegas/i }).first();
+    if (!(await vegas.isVisible().catch(()=>false))) {
+      await this.page.locator('a:has-text("Las Vegas")').first().scrollIntoViewIfNeeded().catch(()=>{});
+    }
+    await vegas.click().catch(async () => {
+      await this.page.locator('a:has-text("Las Vegas")').first().click();
+    });
+
+    await Promise.race([
+      this.page.getByRole('heading', { name: /las vegas/i }).waitFor({ timeout: 15_000 }),
+      this.page.locator('table').first().waitFor({ timeout: 15_000 }),
+      this.page.waitForLoadState('networkidle', { timeout: 15_000 }),
+    ]);
+  }
+
+  async verifyTop3(dataTable: DataTable): Promise<void> {
+    const rows = dataTable.hashes() as Array<Record<string, string>>;
+    for (const r of rows) {
+      const driver = r['driver'];
+      assert.ok(driver, 'Expected "driver" column in the data table');
+      const found = await this.page.locator(`text=${driver}`).count();
+      assert.ok(found > 0, `Driver ${driver} not found in results.`);
+    }
+  }
+}
   async navigateToVegasResults(): Promise<void> {
     // Prefer accessible role selector; fall back to text if needed.
     const vegasLink =
