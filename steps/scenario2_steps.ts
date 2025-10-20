@@ -1,17 +1,27 @@
-import { Given, When, Then } from '@cucumber/cucumber';
+import { GivenWithTimeout, WhenWithTimeout, ThenWithTimeout } from '../support/step-timeout';
+import { chromium } from 'playwright';
 import { expect } from '@playwright/test';
-import { BbcSportHomePage } from '../pages/BbcSportHomePage';
 
-const homePage = new BbcSportHomePage();
+let page: any;
 
-Given('I open the BBC Sport homepage', async () => {
-  await homePage.openHomePage();
+GivenWithTimeout('I open the BBC Sport homepage', async () => {
+  const browser = await chromium.launch({ headless: process.env.HEADLESS !== '0' });
+  const context = await browser.newContext();
+  page = await context.newPage();
+  await page.goto('https://www.bbc.com/sport');
 });
 
-When('I search for {string}', async (query: string) => {
-  await homePage.searchFor(query);
+WhenWithTimeout('I search for {string}', async (query: string) => {
+  const searchButton = page.getByRole('button', { name: /search/i });
+  await searchButton.click();
+  const searchBox = page.getByRole('searchbox');
+  await searchBox.fill(query);
+  await searchBox.press('Enter');
+  await page.waitForLoadState('networkidle');
 });
 
-Then('I should see at least 4 search results', async () => {
-  await homePage.verifySearchResults();
+ThenWithTimeout('I should see at least {int} search results', async (min: number) => {
+  const results = page.locator('a:has(h3), .ssrcss-1ynlzyd-PromoHeadline');
+  const count = await results.count();
+  expect(count).toBeGreaterThanOrEqual(min);
 });
