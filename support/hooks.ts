@@ -1,6 +1,8 @@
 // support/hooks.ts
-import { BeforeAll, AfterAll, Before, After, Status } from '@cucumber/cucumber';
+import { setDefaultTimeout, BeforeAll, AfterAll, Before, After, Status } from '@cucumber/cucumber';
 import { chromium, type Browser, type BrowserContext, type Page } from 'playwright';
+
+setDefaultTimeout(60_000); // 60s for every step
 
 let browser!: Browser;
 let context: BrowserContext | undefined;
