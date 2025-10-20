@@ -1,4 +1,4 @@
-import { GivenWithTimeout, WhenWithTimeout, ThenWithTimeout } from '../support/step-timeout';
+import { Given, When, Then } from '@cucumber/cucumber';
 import { chromium } from 'playwright';
 import { expect } from '@playwright/test';
 
