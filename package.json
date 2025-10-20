@@ -3,11 +3,12 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "pretest": "node -e \"require('fs').mkdirSync('reports', { recursive: true })\"",
-    "test": "cucumber-js --require-module ts-node/register --exit --require 'support/**/*.ts' --require 'steps/**/*.ts' 'features/**/*.feature' --format json:reports/cucumber_report.json",
-    "report": "node support/generateReport.js",
-    "ci": "npm run test && npm run report",
-    "test:headed": "HEADLESS=0 cucumber-js --require-module ts-node/register 'features/**/*.feature' --require 'steps/**/*.ts'"
+  "pretest": "node -e \"require('fs').mkdirSync('reports', { recursive: true })\"",
+  "test": "cucumber-js --require-module ts-node/register --exit --require 'support/**/*.ts' --require 'steps/**/*.ts' 'features/**/*.feature' --format json:reports/cucumber_report.json",
+  "report": "node support/generateReport.js",
+  "pdf": "node convert-report-to-pdf.js",
+  "ci": "npm run test && npm run report && npm run pdf",
+  "pdf": "node convert-report-to-pdf.js"
   },
   "devDependencies": {
     "@cucumber/cucumber": "^9.0.0",

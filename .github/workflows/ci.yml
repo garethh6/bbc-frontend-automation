@@ -16,7 +16,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'   # 18+ is fine; 20 is current LTS
+          node-version: '18'
 
       - name: Install dependencies
         run: npm ci
@@ -24,11 +24,15 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
 
+      # This should run tests, generate HTML, then PDF (per your package.json "ci")
       - name: Run tests and generate reports
         run: npm run ci
 
-      - name: Upload test artifacts
+      # ⬇️ Upload the full reports folder (HTML, JSON, PDF)
+      - name: Upload reports artifact
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test-reports
-          path: reports/
+          name: cucumber-reports
+          path: reports/**
+          retention-days: 14
