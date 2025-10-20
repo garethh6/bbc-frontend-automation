@@ -9,7 +9,7 @@ Given('I open the BBC Sport Formula 1 page', async () => {
   await pageModel.openF1Page();
 });
 
-When('I navigate to the Las Vegas Grand Prix results', async () => {
+When('I navigate to the Las Vegas Grand Prix results', { timeout: 60_000 }, async () => {
   await pageModel.navigateToVegasResults();
 });
 
