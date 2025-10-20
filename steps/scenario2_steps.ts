@@ -31,6 +31,3 @@ When('I search for {string}', async (query: string) => {
   await searchBox.press('Enter');
   await page.waitForLoadState('networkidle');
 });
-
-Then('the results table should contain the following top 3 finishers:', async (dataTable: DataTable) => {
-});
