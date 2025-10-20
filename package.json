@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "test": "cucumber-js --require-module ts-node/register --exit 'features/**/*.feature' --require 'steps/**/*.ts'",
+    "test": "cucumber-js --require-module ts-node/register --exit --require 'support/**/*.ts' --require 'steps/**/*.ts' 'features/**/*.feature'",
     "report": "node support/generateReport.js",
     "test:headed": "HEADLESS=0 cucumber-js --require-module ts-node/register 'features/**/*.feature' --require 'steps/**/*.ts'",
     "ci": "npm run test && npm run report"
