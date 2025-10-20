@@ -1,27 +1,21 @@
-// support/generateReport.js
-const fs = require('fs');
-const path = require('path');
-const reporter = require('cucumber-html-reporter');
-
-const jsonFile = path.join('reports', 'cucumber_report.json');
-const output = path.join('reports', 'cucumber_report.html');
-
-if (!fs.existsSync(jsonFile)) {
-  console.error(`❌ Cucumber JSON not found at: ${jsonFile}`);
-  process.exit(1);
-}
-
-const options = {
-  theme: 'bootstrap',
-  jsonFile,
-  output,
-  reportSuiteAsScenarios: true,
-  launchReport: false,
-  metadata: {
-    "Platform": process.platform,
-    "Node": process.version
+{
+  "name": "bbc-frontend-automation",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "pretest": "node -e \"require('fs').mkdirSync('reports', { recursive: true })\"",
+    "test": "cucumber-js --require-module ts-node/register --exit --require 'support/**/*.ts' --require 'steps/**/*.ts' 'features/**/*.feature' --format json:reports/cucumber_report.json",
+    "report": "node support/generateReport.js",
+    "ci": "npm run test && npm run report",
+    "test:headed": "HEADLESS=0 cucumber-js --require-module ts-node/register 'features/**/*.feature' --require 'steps/**/*.ts'"
+  },
+  "devDependencies": {
+    "@cucumber/cucumber": "^9.0.0",
+    "@cucumber/html-formatter": "^19.0.0",
+    "@playwright/test": "^1.56.1",
+    "cucumber-html-reporter": "^6.0.0",
+    "playwright": "^1.56.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.0"
   }
-};
-
-reporter.generate(options);
-console.log(`✅ HTML report generated at: ${output}`);
+}

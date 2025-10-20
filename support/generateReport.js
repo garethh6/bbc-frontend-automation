@@ -6,9 +6,8 @@ const reporter = require('cucumber-html-reporter');
 const jsonFile = path.join('reports', 'cucumber_report.json');
 const output = path.join('reports', 'cucumber_report.html');
 
-// Quick sanity check so the script fails with a helpful message
 if (!fs.existsSync(jsonFile)) {
-  console.error(`Cucumber JSON not found at: ${jsonFile}`);
+  console.error(`❌ Cucumber JSON not found at: ${jsonFile}`);
   process.exit(1);
 }
 
@@ -25,4 +24,4 @@ const options = {
 };
 
 reporter.generate(options);
-console.log(`HTML report generated at: ${output}`);
+console.log(`✅ HTML report generated at: ${output}`);
