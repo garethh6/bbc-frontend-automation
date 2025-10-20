@@ -1,7 +1,8 @@
+// support/hooks.ts
 import { BeforeAll, AfterAll, Before, After, Status } from '@cucumber/cucumber';
 import { chromium, type Browser, type BrowserContext, type Page } from 'playwright';
 
-let browser: Browser;
+let browser!: Browser;
 let context: BrowserContext | undefined;
 export let page: Page | undefined;
 
@@ -17,18 +18,32 @@ Before(async () => {
 });
 
 After(async function (scenario) {
-  // (Optional) take a screenshot on failure
+  // Optional: capture a screenshot on failure
   if (scenario.result?.status === Status.FAILED && page) {
-    try { await page.screenshot({ path: `reports/${Date.now()}-failed.png`, fullPage: true }); } catch {}
+    try {
+      await page.screenshot({
+        path: `reports/${Date.now()}-failed.png`,
+        fullPage: true,
+      });
+    } catch {
+      // ignore screenshot errors
+    }
   }
-  await context?.close().catch(()=>{});
-  context = undefined;
-  page = undefined;
+
+  try {
+    await context?.close();
+  } catch {
+    // ignore close errors
+  } finally {
+    context = undefined;
+    page = undefined;
+  }
 });
 
 AfterAll(async () => {
-  await browser?.close().catch(()=>{});
-});
-import { setDefaultTimeout } from '@cucumber/cucumber';
-setDefaultTimeout(60_000); // 60 seconds per step
+  try {
+    await browser?.close();
+  } catch {
+    // ignore close errors
+  }
 });
