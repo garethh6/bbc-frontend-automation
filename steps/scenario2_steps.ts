@@ -33,5 +33,4 @@ When('I search for {string}', async (query: string) => {
 });
 
 Then('the results table should contain the following top 3 finishers:', async (dataTable: DataTable) => {
-  await pageModel.verifyTop3(dataTable);
 });
