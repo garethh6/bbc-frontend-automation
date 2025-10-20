@@ -2,12 +2,14 @@
   "name": "bbc-frontend-automation",
   "version": "1.0.0",
   "private": true,
+{
   "scripts": {
-    "test": "cucumber-js --require-module ts-node/register --exit --require 'support/**/*.ts' --require 'steps/**/*.ts' 'features/**/*.feature'",
+    "pretest": "node -e \"require('fs').mkdirSync('reports', { recursive: true })\"",
+    "test": "cucumber-js --require-module ts-node/register --exit --require 'support/**/*.ts' --require 'steps/**/*.ts' 'features/**/*.feature' --format json:reports/cucumber_report.json",
     "report": "node support/generateReport.js",
-    "test:headed": "HEADLESS=0 cucumber-js --require-module ts-node/register 'features/**/*.feature' --require 'steps/**/*.ts'",
     "ci": "npm run test && npm run report"
-  },
+  }
+}
   "devDependencies": {
     "@cucumber/cucumber": "^9.0.0",
     "@cucumber/html-formatter": "^19.0.0",
