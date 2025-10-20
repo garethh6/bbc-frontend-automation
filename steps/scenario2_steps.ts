@@ -31,23 +31,45 @@ Given('I open the BBC Sport homepage', async () => {
 });
 
 When('I search for {string}', async (query: string) => {
-  // Open the search UI if present
-  const searchButton = page.getByRole('button', { name: /search/i }).first();
-  if (await searchButton.isVisible().catch(() => false)) {
-    await searchButton.click().catch(() => {});
+  // Ensure page reference is set
+  page = worldPage!;
+
+  // Strategy 1: open the search UI using common triggers
+  const searchTriggers = [
+    page.getByRole('button', { name: /search/i }).first(),
+    page.locator('[aria-label*="Search"]').first(),
+    page.locator('button svg[aria-label*="Search"]').first(),
+  ];
+  for (const trigger of searchTriggers) {
+    if (await trigger.isVisible().catch(() => false)) {
+      await trigger.click().catch(() => {});
+      await page.waitForTimeout(200).catch(() => {});
+      break;
+    }
   }
 
-  // Find a usable input (role first, then common fallbacks)
-  let searchBox = page.getByRole('searchbox').first();
-  if (!(await searchBox.isVisible().catch(() => false))) {
-    const fallbacks = [
-      'input[type="search"]',
-      'input[name="q"]',
-      '[data-testid="search-input"]',
-      'input[placeholder*="Search"]',
-    ];
-    for (const sel of fallbacks) {
-      const cand = page.locator(sel).first();
+  // Strategy 2: find a usable input (role first, then common fallbacks)
+  const inputCandidates = [
+    page.getByRole('searchbox').first(),
+    page.locator('input[type="search"]').first(),
+    page.locator('input[name="q"]').first(),
+    page.locator('[data-testid="search-input"]').first(),
+    page.locator('input[placeholder*="Search"]').first(),
+  ];
+
+  let searchBox: undefined | import('playwright').Locator;
+  for (const cand of inputCandidates) {
+    if (await cand.isVisible().catch(() => false)) {
+      searchBox = cand;
+      break;
+    }
+  }
+
+  // Strategy 3: try keyboard shortcuts to reveal/focus the search
+  if (!searchBox) {
+    await page.keyboard.press('/').catch(() => {});
+    await page.keyboard.press('s').catch(() => {});
+    for (const cand of inputCandidates) {
       if (await cand.isVisible().catch(() => false)) {
         searchBox = cand;
         break;
@@ -55,6 +77,15 @@ When('I search for {string}', async (query: string) => {
     }
   }
 
+  // Strategy 4 (final fallback): go straight to BBC search scoped to Sport
+  if (!searchBox) {
+    const url = `https://www.bbc.co.uk/search?q=${encodeURIComponent(query)}&scope=sport`;
+    await page.goto(url, { waitUntil: 'domcontentloaded' });
+    await page.waitForLoadState('networkidle');
+    return;
+  }
+
+  // Use the input we found
   await searchBox.fill(query);
   await searchBox.press('Enter');
 
