@@ -2,7 +2,7 @@
 
 This project automates front-end BDD scenarios for the SecuritEase QE assessment using **Playwright**, **Cucumber**, and **TypeScript**.
 
-> [![Open HTML Report](https://img.shields.io/badge/HTML%20Report-Open-blue?logo=google-chrome)](reports/cucumber_report.html)  
+> [![View HTML Report](https://img.shields.io/badge/HTML%20Report-Online-blue?logo=github)](https://nikitapierce.github.io/BBC_Frontend_Automation_Assignment/cucumber_report.html)
 
 
 ## Installation Steps
